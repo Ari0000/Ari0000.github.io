@@ -4,26 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SharpMind - Trening Matematyczny</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="App.css">
-    <script>
-        // Tu wklej poniższy kod JavaScript
+    <script defer>
         function SharpMindApp() {
             let exercise = {};
             let userAnswer = '';
             let score = { correct: 0, wrong: 0 };
             let isOnline = navigator.onLine;
-            let deferredPrompt = null;
-            let showInstallButton = false;
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-            // Obsługa instalacji PWA
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                showInstallButton = true;
-                updateUI();
-            });
 
             window.addEventListener('online', () => {
                 isOnline = true;
@@ -59,26 +45,6 @@
                     exercise.correctAnswer = exercise.num1 * exercise.num2;
                 }
             });
-
-            // Rejestracja Service Workera
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker
-                    .register('/service-worker.js')
-                    .then((registration) => console.log('ServiceWorker zarejestrowany:', registration))
-                    .catch((error) => console.log('Błąd rejestracji ServiceWorker:', error));
-            }
-
-            async function handleInstallClick() {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        showInstallButton = false;
-                    }
-                    deferredPrompt = null;
-                    updateUI();
-                }
-            }
 
             function generateExercise() {
                 const operators = ['+', '-', '*', '/'];
@@ -128,13 +94,6 @@
                 } else {
                     offlineMessage.style.display = 'none';
                 }
-
-                const installButton = document.querySelector('.install-button');
-                if (!isIOS && showInstallButton) {
-                    installButton.style.display = 'block';
-                } else {
-                    installButton.style.display = 'none';
-                }
             }
 
             // Inicjalizacja
@@ -151,7 +110,6 @@
             });
 
             document.querySelector('button').addEventListener('click', checkAnswer);
-            document.querySelector('.install-button')?.addEventListener('click', handleInstallClick);
         }
 
         // Uruchom aplikację po załadowaniu DOM
@@ -162,15 +120,6 @@
     <div class="App">
         <header class="App-header">
             <h1>SharpMind - Trening Matematyczny</h1>
-            <div class="ios-install-info">
-                Aby zainstalować aplikację:
-                <ol>
-                    <li>Otwórz w Safari</li>
-                    <li>Kliknij ikonę Udostępnij</li>
-                    <li>Wybierz "Dodaj do ekranu początkowego"</li>
-                </ol>
-            </div>
-            <button class="install-button">Zainstaluj aplikację</button>
             <div class="offline-message">Tryb offline - aplikacja nadal działa!</div>
             <div class="exercise">
                 <span></span>
@@ -179,7 +128,7 @@
                 <span>=</span>
                 <input type="number" inputMode="numeric" pattern="[0-9]*">
             </div>
-            <button>Sprawdź</button>
+            <button class="check-button">Sprawdź</button>
             <div class="score">
                 <p></p>
                 <p></p>
